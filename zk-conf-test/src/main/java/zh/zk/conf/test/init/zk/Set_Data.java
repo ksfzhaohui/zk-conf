@@ -16,6 +16,6 @@ public class Set_Data {
 		Stat stat = new Stat();
 		System.out.println(stat.getVersion());
 		System.out.println("Success set node for :" + path + ",new version:"
-				+ client.setData().forPath(path, "new1".getBytes()).getVersion());
+				+ client.setData().forPath(path, "new2".getBytes()).getVersion());
 	}
 }

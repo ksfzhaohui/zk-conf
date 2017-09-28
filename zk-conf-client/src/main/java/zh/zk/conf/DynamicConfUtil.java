@@ -3,9 +3,15 @@ package zh.zk.conf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import zh.zk.conf.service.ZKConnect;
+import zh.zk.conf.service.ZKWatcherService;
 import zh.zk.conf.store.MemoryStore;
 
+/**
+ * 动态参数获取工具类
+ * 
+ * @author hui.zhao.cfs
+ *
+ */
 public class DynamicConfUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(DynamicConfUtil.class);
@@ -20,7 +26,7 @@ public class DynamicConfUtil {
 		boolean bool = MemoryStore.containsKey(key);
 		if (!bool) {
 			try {
-				String value = ZKConnect.readPath(key);
+				String value = ZKWatcherService.readPath(key);
 				MemoryStore.updateKV(key, value);
 			} catch (Exception e) {
 				logger.error("readPath error key=" + key, e);

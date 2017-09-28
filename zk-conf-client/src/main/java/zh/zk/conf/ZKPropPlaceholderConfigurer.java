@@ -27,9 +27,11 @@ public class ZKPropPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
 	private static Logger logger = LoggerFactory.getLogger(ZKPropPlaceholderConfigurer.class);
 
-	private ZKWatcherService zkService;
 	private static String appName;
 	private static String[] keyPatterns;
+
+	private String address;
+	private int sessionTimeout = 10000;
 
 	@Override
 	protected Properties mergeProperties() throws IOException {
@@ -53,8 +55,8 @@ public class ZKPropPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 		}
 		Map<String, String> map = new HashMap<String, String>();
 		try {
-			ZKConnect.connect();
-			zkService.watcherKeys(keyPatterns);
+			ZKConnect.connect(address, sessionTimeout);
+			ZKWatcherService.watcherKeys(keyPatterns);
 			map = MemoryStore.getMap();
 		} catch (Exception e) {
 			logger.error("从远程获取动态配置信息失败", e);
@@ -112,8 +114,12 @@ public class ZKPropPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 		}
 	}
 
-	public void setZkService(ZKWatcherService zkService) {
-		this.zkService = zkService;
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
 	}
 
 }

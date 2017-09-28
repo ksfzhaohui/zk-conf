@@ -10,12 +10,18 @@ import org.apache.curator.retry.RetryNTimes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 与zk建立连接
+ * 
+ * @author hui.zhao.cfs
+ *
+ */
 public class ZKConnect {
 
 	private static Logger logger = LoggerFactory.getLogger(ZKConnect.class);
 
-	private static final String zkAddress = "127.0.0.1:2181";
-	private static final int timeout = 10000;
+	private static String address;
+	private static int sessionTimeout;
 	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 	private static CuratorFramework client = null;
 
@@ -28,26 +34,14 @@ public class ZKConnect {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public static void connect() throws InterruptedException {
-		client = CuratorFrameworkFactory.builder().connectString(zkAddress).sessionTimeoutMs(timeout)
+	public static void connect(String address, int sessionTimeout) throws InterruptedException {
+		ZKConnect.address = address;
+		ZKConnect.sessionTimeout = sessionTimeout;
+		client = CuratorFrameworkFactory.builder().connectString(address).sessionTimeoutMs(sessionTimeout)
 				.retryPolicy(new RetryNTimes(5, 5000)).build();
 		client.getConnectionStateListenable().addListener(connectionListener);
 		client.start();
 		countDownLatch.await();
-	}
-
-	/**
-	 * 获取指定path对应的value
-	 * 
-	 * @param path
-	 * @return
-	 * @throws Exception
-	 */
-	public static String readPath(String path) throws Exception {
-		byte[] buffer = ZKConnect.getClient().getData().forPath(path);
-		String value = new String(buffer);
-		logger.info("readPath:path = " + path + ",value = " + value);
-		return value;
 	}
 
 	/** zk连接监听器 **/
@@ -66,7 +60,6 @@ public class ZKConnect {
 					logger.error("reconnect error", e);
 				}
 			}
-
 		}
 	};
 
@@ -77,7 +70,7 @@ public class ZKConnect {
 	 */
 	private static void reconnect() throws InterruptedException {
 		unregister();
-		connect();
+		connect(ZKConnect.address, ZKConnect.sessionTimeout);
 	}
 
 	private static void unregister() {

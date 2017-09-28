@@ -31,7 +31,7 @@ public class ZKWatcherService {
 	 * 
 	 * @throws Exception
 	 */
-	public void watcherKeys(String[] keyPatterns) throws Exception {
+	public static void watcherKeys(String[] keyPatterns) throws Exception {
 		List<String> pathList = new ArrayList<String>();
 		for (String key : keyPatterns) {
 			pathList.addAll(listChildren(key));
@@ -42,11 +42,25 @@ public class ZKWatcherService {
 		if (pathList != null && pathList.size() > 0) {
 			Map<String, String> map = new HashMap<String, String>();
 			for (String path : pathList) {
-				map.put(path, ZKConnect.readPath(path));
+				map.put(path, readPath(path));
 				watcherPath(path);
 			}
 			MemoryStore.updateMap(map);
 		}
+	}
+
+	/**
+	 * 获取指定path对应的value
+	 * 
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
+	public static String readPath(String path) throws Exception {
+		byte[] buffer = ZKConnect.getClient().getData().forPath(path);
+		String value = new String(buffer);
+		logger.info("readPath:path = " + path + ",value = " + value);
+		return value;
 	}
 
 	/**
@@ -56,7 +70,7 @@ public class ZKWatcherService {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> listChildren(String path) throws Exception {
+	private static List<String> listChildren(String path) throws Exception {
 		List<String> pathList = new ArrayList<String>();
 		pathList.add(path);
 		List<String> list = ZKConnect.getClient().getChildren().forPath(path);
@@ -74,7 +88,7 @@ public class ZKWatcherService {
 		return pathList;
 	}
 
-	private void watcherPath(String path) {
+	private static void watcherPath(String path) {
 		watcherPath(path, true);
 	}
 
@@ -83,7 +97,7 @@ public class ZKWatcherService {
 	 * 
 	 * @param path
 	 */
-	private void watcherPath(String path, final boolean isInit) {
+	private static void watcherPath(String path, final boolean isInit) {
 		PathChildrenCache cache = null;
 		try {
 			cache = new PathChildrenCache(ZKConnect.getClient(), path, true);
