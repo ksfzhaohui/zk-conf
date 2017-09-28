@@ -19,7 +19,7 @@ import zh.zk.conf.store.MemoryStore;
 /**
  * 基于zk的参数通知
  * 
- * @author hui.zhao.cfs
+ * @author hui.zhao
  *
  */
 public class ZKWatcherService {

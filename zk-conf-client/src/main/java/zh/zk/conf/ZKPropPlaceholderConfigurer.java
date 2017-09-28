@@ -30,6 +30,7 @@ public class ZKPropPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 	private static String appName;
 	private static String[] keyPatterns;
 
+	/** zk连接地址 ex:127.0.0.1:2181 **/
 	private String address;
 	private int sessionTimeout = 10000;
 
@@ -53,6 +54,11 @@ public class ZKPropPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 			logger.error("参数异常:应用对应的Key标示不能为空");
 			throw new IllegalArgumentException("the defaultkey of this app must not be blank");
 		}
+		if ((null == address) || (address.endsWith(""))) {
+			logger.error("参数异常:应用对应的address标示不能为空");
+			throw new IllegalArgumentException("the address of this app must not be blank,ex:[127.0.0.1:2181]");
+		}
+
 		Map<String, String> map = new HashMap<String, String>();
 		try {
 			ZKConnect.connect(address, sessionTimeout);
@@ -60,11 +66,16 @@ public class ZKPropPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 			map = MemoryStore.getMap();
 		} catch (Exception e) {
 			logger.error("从远程获取动态配置信息失败", e);
+			boolean localLoad = false;
 			try {
 				map = LocalStore.load();
+				localLoad = true;
 			} catch (Exception ex) {
 				logger.error("加载本地存储失败:", ex);
-				throw new RuntimeException("loading local store failure!");
+				throw new ZKConfException("loading local config failure,app must not be run.");
+			}
+			if (!localLoad) {
+				throw new ZKConfException("loading remote config failure,app must not be run.");
 			}
 		}
 		fillProperties(result, map);

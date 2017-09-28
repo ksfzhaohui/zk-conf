@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 本地内存存储配置数据
  * 
- * @author hui.zhao.cfs
+ * @author hui.zhao
  *
  */
 public class MemoryStore {

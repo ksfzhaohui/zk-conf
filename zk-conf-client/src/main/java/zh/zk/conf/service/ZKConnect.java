@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 与zk建立连接
  * 
- * @author hui.zhao.cfs
+ * @author hui.zhao
  *
  */
 public class ZKConnect {

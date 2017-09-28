@@ -20,7 +20,7 @@ import zh.zk.conf.ZKPropPlaceholderConfigurer;
 /**
  * 本地文件存储配置数据
  * 
- * @author hui.zhao.cfs
+ * @author hui.zhao
  *
  */
 public class LocalStore {

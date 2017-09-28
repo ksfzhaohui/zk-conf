@@ -9,7 +9,7 @@ import zh.zk.conf.store.MemoryStore;
 /**
  * 动态参数获取工具类
  * 
- * @author hui.zhao.cfs
+ * @author hui.zhao
  *
  */
 public class DynamicConfUtil {
